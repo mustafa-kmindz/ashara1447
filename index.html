@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>Ashara 1447H Locations</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
     #map {
@@ -68,6 +69,16 @@
       }
       100% {
         box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+      }
+    }
+    @media (max-width: 600px) {
+      header {
+        height: 40px;
+        line-height: 40px;
+        font-size: 16px;
+      }
+      #map {
+        height: calc(100% - 40px);
       }
     }
   </style>
