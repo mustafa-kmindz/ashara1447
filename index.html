@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ashara 1447H Locations</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map {
+      height: calc(100% - 50px); /* Adjust height for header */
+      width: 100%;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      height: 50px;
+      background-color: #007bff; /* Blue header */
+      color: white;
+      text-align: center;
+      line-height: 50px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .marker-label {
+      background-color: #007bff; /* Blue background */
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      text-align: center;
+      border-radius: 50%;
+      width: 25px;
+      height: 25px;
+      line-height: 25px;
+      border: 1px solid black;
+      animation: pulse 2s infinite;
+    }
+    .marker-label-hq {
+      background-color: red; /* Red background for HQ */
+      color: white;
+      font-size: 15px;
+      font-weight: bold;
+      text-align: center;
+      border-radius: 50%;
+      width: 35px;
+      height: 35px;
+      line-height: 35px;
+      border: 2px solid black;
+      animation: pulse-hq 2s infinite;
+    }
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.4);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(0, 123, 255, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(0, 123, 255, 0);
+      }
+    }
+    @keyframes pulse-hq {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 15px rgba(255, 0, 0, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+      }
+    }
+  </style>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+<body>
+
+<header id="map-header">
+  Ashara 1447H Locations - Total: 25
+</header>
+<div id="map"></div>
+
+<script>
+  // Initialize the map
+  const map = L.map('map'); // We'll use fitBounds to auto-adjust the view later.
+
+  // Add OpenStreetMap tiles
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Define locations with their names and coordinates
+  const locations = [
+    { count: 1, name: "Karbala", coords: [32.6160, 44.0339] },
+    { count: 2, name: "Najaf", coords: [31.9898, 44.3231] },
+    { count: 3, name: "Indore", coords: [22.7196, 75.8577] },
+    { count: 4, name: "Betma", coords: [22.6804, 75.6149] },
+    { count: 5, name: "Barnagar", coords: [23.0605, 75.3728] },
+    { count: 6, name: "Ujjain", coords: [23.1793, 75.7849] },
+    { count: 7, name: "Ratlam", coords: [23.3305, 75.0364] },
+    { count: 8, name: "Khachrod", coords: [23.4236, 75.2810] },
+    { count: 9, name: "Kurnool", coords: [15.8281, 78.0373] },
+    { count: 10, name: "Dewas", coords: [22.9659, 76.0553] },
+    { count: 11, name: "Sarangpur", coords: [23.5674, 76.4766] },
+    { count: 12, name: "Shajapur", coords: [23.4261, 76.2770] },
+    { count: 13, name: "Jaora", coords: [23.6353, 75.1264] },
+    { count: 14, name: "Hyderabad", coords: [17.3850, 78.4867] },
+    { count: 15, name: "Secunderabad", coords: [17.4399, 78.4983] },
+    { count: 16, name: "Vizag", coords: [17.6868, 83.2185] },
+    { count: 17, name: "Bangalore", coords: [12.9716, 77.5946] },
+    { count: 18, name: "Erode", coords: [11.3410, 77.7172] },
+    { count: 19, name: "Coimbatore", coords: [11.0168, 76.9558] },
+    { count: 20, name: "Colombo", coords: [6.9271, 79.8612] },
+    { count: 21, name: "Cochin", coords: [9.9312, 76.2673] },
+    { count: 22, name: "Calicut", coords: [11.2588, 75.7804] },
+    { count: 23, name: "Sailana", coords: [23.4582, 74.9996] },
+    { count: 24, name: "Alote", coords: [23.8762, 75.5512] },
+    { count: "1447H", name: "Ashara 1447H HQ", coords: [13.0827, 80.2707] }, // Chennai HQ
+  ];
+
+  // Create a Styled Marker with Count and Title
+  function createMarker(lat, lng, count, title, isHQ = false) {
+    const icon = L.divIcon({
+      className: isHQ ? "marker-label-hq" : "marker-label",
+      html: count,
+      iconSize: isHQ ? [35, 35] : [25, 25],
+    });
+    const marker = L.marker([lat, lng], {
+      icon,
+      title, // Tooltip shown on hover
+    }).addTo(map);
+    marker.bindPopup(`<strong>${title}</strong>`); // Popup when clicked
+    return marker; // Return marker for bounds calculation
+  }
+
+  // Automatically calculate bounds to fit all markers
+  const bounds = L.latLngBounds([]);
+
+  locations.forEach(location => {
+    const isHQ = location.count === "1447H"; // Check if it's Chennai (HQ)
+    const marker = createMarker(
+      location.coords[0],
+      location.coords[1],
+      location.count,
+      location.name,
+      isHQ
+    );
+
+    // Extend the bounds with each marker's position
+    bounds.extend(marker.getLatLng());
+  });
+
+  // Fit the map's view (zoom and position) to show all markers
+  map.fitBounds(bounds);
+</script>
+
+</body>
+</html>
